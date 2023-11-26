@@ -7,7 +7,9 @@ from colorama import Fore, Style
 from difflib import SequenceMatcher
 from utils import *
 import yaml
-headers = {'X-Api-Token': '91ab28ce-f679-4356-8b06-362f94ee0348'}
+from bs4 import BeautifulSoup
+
+
 root = os.path.abspath("minecraft")
 plugin_path = os.path.abspath(f"{root}/plugins")
 if not os.path.exists(f"{root}/plugin_data"):
@@ -15,6 +17,7 @@ if not os.path.exists(f"{root}/plugin_data"):
 else:
     yml_path = os.path.abspath(f"{root}/plugin_data")
 ptypes = ["spigot", "bukkit"]
+
 
 def get_download_url(plugin):
     if plugin.type[0] == "s":
@@ -24,52 +27,48 @@ def get_download_url(plugin):
     else:
         raise ValueError("Invalid type")
 
-def get_version_id(type, id):
-        if type == "spigot":
-            return requests.get(f"https://api.spiget.org/v2/resources/{id}").json()["version"]
-        elif type == "bukkit":
-            ljson = requests.get(f"https://api.curseforge.com/servermods/files?projectIds={id}").json()
-            
-            print(ljson, id)
-            link = ljson[0]["fileUrl"].replace("\/", "/")
-            return link.split("/")[-1]
+
+def get_version_id(type, id, slug):
+    if type[0] == "s":
+        return requests.get(f"https://api.spiget.org/v2/resources/{id}").json()[
+            "version"
+        ]
+    elif type[0] == "b":
+        r = requests.get(f"https://dev.bukkit.org/projects/{slug}/files")
+        soup = BeautifulSoup(r.content, "html.parser")
+        version_id = soup.find("tbody").find("a")["href"]
+        if version_id != None:
+            return version_id.split("/")[-2]
+        else:
+            return None
 
 
 class Plugin:
-    def __init__(self, path, plugin):
-        self.path = path
+    def __init__(self, plugin):
         self.id = plugin.id
         self.type = plugin.type
         self.slug = plugin.slug
-        yaml = self.get_plugin_yml(path)
-        self.name = yaml.get("name")
-        self.version = yaml.get("version")
-        self.version_id = get_version_id(type=self.type, id=self.id)
-        self.api_version = yaml.get("api-version")
-        self.website = yaml.get("website")
-        self.download_url = get_download_url(
-            SearchResult(id=self.id, type=self.type, name=self.name, slug=self.slug)
-        )
+        self.name = plugin.name
+        self.version_id = get_version_id(type=self.type, id=self.id, slug=self.slug)
         self.save_to_yml()
-        
+
     def save_to_yml(self):
         to_dict = {
             "name": self.name,
-            "version": self.version,
             "version-id": self.version_id,
-            "api-version": self.api_version,
-            "website": self.website,
             "slug": self.slug,
-            "download-url": self.download_url,
         }
         with open(f"{yml_path}/{self.name}~{self.type[0]}~{self.id}.yml", "w") as yml:
             yaml.dump(to_dict, yml)
+
     def get_plugin_yml(self, jar_path):
-        with zipfile.ZipFile(jar_path, "r") as jar:
-            for file in jar.namelist():
-                if file.endswith("plugin.yml"):
-                    with jar.open(file) as yml:
-                        return yaml.safe_load(yml)
+        # update_plugin_yml(jar_path)
+        yname = os.path.basename(jar_path).split(".")[0]
+        if os.path.exists(f"{yml_path}/{yname}.yml"):
+            with open(f"{yml_path}/{yname}.yml", "r") as yml:
+                return yaml.safe_load(yml)
+        else:
+            open(f"{yml_path}/{yname}.yml", "w").close()
 
 
 def sort_results(r: list, query: str):
@@ -78,33 +77,39 @@ def sort_results(r: list, query: str):
         result.search_volume = similarity
     return sorted(r, key=lambda x: x.search_volume, reverse=True)
 
+
 def update_plugin_yml(path):
     for file in os.listdir(path):
         if file.endswith(".jar"):
             filename = os.path.basename(file)
-            print(filename)
-            try:
-                filename = filename.split("~")
-                name = filename[0]
-                type = filename[1]
-                id = filename[2].split(".")[0]
-                with open(f'{name}~{type[0]}~{id}.yml', 'r') as file:
-                    data = yaml.safe_load(file)
-                data["name"] = name
-                data["type"] = type
-                data["id"] = id
-                with open('my_class.yml', 'w') as file:
-                    yaml.dump(data, file)
-                if not data["version-id"] or data["version-id"] != get_version_id(type, id):
-                    plugin = Plugin(path=f"{path}/{file}", plugin=SearchResult(type=type, name=name, id=id))
-                    print(f"{Fore.GREEN}Updated plugin {name}{Style.RESET_ALL}")
-                    download_plugin(plugin, plugin_path)
-            except Exception as p:
-                print(p)
-                print(f"{Fore.RED}Could not set .yml for {filename}{Style.RESET_ALL}")
-            
 
-    
+            filename = filename.split("~")
+            name = filename[0]
+            type = filename[1]
+            id = filename[2].split(".")[0]
+            yml_file = f"{yml_path}/{name}~{type[0]}~{id}.yml"
+
+            if not os.path.exists(yml_file):
+                os.mknod(yml_file)
+            with open(yml_file, "r") as file:
+                data = yaml.safe_load(file)
+            data["name"] = name
+            data["type"] = type
+            data["id"] = id
+            with open(yml_file, "w") as file:
+                yaml.dump(data, file)
+            if data["version-id"] != get_version_id(type, id, data["slug"]):
+                print(f"{Fore.GREEN}Updating {name}{Style.RESET_ALL}")
+                download_plugin(
+                    plugin=Plugin(
+                        SearchResult(type=type, name=name, id=id, slug=data["slug"])
+                    ),
+                    target=plugin_path,
+                )
+                data["version-id"] = get_version_id(type, id, data["slug"])
+                with open(yml_file, "w") as file:
+                    yaml.dump(data, file)
+
 
 def get_longest(l: list):
     longest = 0
@@ -155,21 +160,29 @@ class Search:
     def get_results(self):
         results = []
         for result in self.spigot:
-            
             results.append(SearchResult("spigot", result["name"], result["id"]))
         for result in self.bukkit:
-            results.append(SearchResult(type="bukkit", name=result["name"], id=result["id"], slug=result["slug"]))
+            results.append(
+                SearchResult(
+                    type="bukkit",
+                    name=result["name"],
+                    id=result["id"],
+                    slug=result["slug"],
+                )
+            )
         return sort_results(results, self.query)
 
 
 def download_plugin(plugin: SearchResult, target):
     try:
-        d = download_file(get_download_url(plugin), f"{target}/{plugin.name}~{plugin.type[0]}~{plugin.id}.jar")
+        d = download_file(
+            get_download_url(plugin),
+            f"{target}/{plugin.name}~{plugin.type[0]}~{plugin.id}.jar",
+        )
     except FileExistsError:
         print(f"{Fore.RED}Plugin already installed!{Style.RESET_ALL}")
 
-    return Plugin(path=d, plugin=plugin)
-
+    return Plugin(plugin=plugin)
 
 
 def plugin_install_process():
@@ -185,6 +198,5 @@ def plugin_install_process():
     download_plugin(plugin, plugin_path)
     update_plugin_yml(plugin_path)
 
-if __name__ == "__main__":
-    plugin_install_process()
-    
+
+
