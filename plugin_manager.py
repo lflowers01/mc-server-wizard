@@ -10,12 +10,12 @@ import yaml
 from bs4 import BeautifulSoup
 
 
-root = os.path.abspath("minecraft")
+root = os.path.abspath("mcserver")
 plugin_path = os.path.abspath(f"{root}/plugins")
 if not os.path.exists(f"{root}/plugin_data"):
-    yml_path = os.mkdir(f"{root}/plugin_data")
-else:
-    yml_path = os.path.abspath(f"{root}/plugin_data")
+    os.mkdir(f"{root}/plugin_data")
+
+yml_path = os.path.abspath(f"{root}/plugin_data")
 ptypes = ["spigot", "bukkit"]
 
 
@@ -197,6 +197,3 @@ def plugin_install_process():
     plugin = search_results.results[selection]
     download_plugin(plugin, plugin_path)
     update_plugin_yml(plugin_path)
-
-
-

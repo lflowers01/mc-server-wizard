@@ -2,3 +2,5 @@ search
 minecraft
 .vscode
 __pycache__
+mcserver
+*.jar
