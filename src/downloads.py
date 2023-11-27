@@ -27,11 +27,8 @@ def download_file(url, filename):
     progress_bar.close()
 
     if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
-        print(
-            Fore.RED
-            + f"ERROR, something went wrong downloading {url}"
-            + Style.RESET_ALL
-        )
+        print(Fore.RED + f"ERROR, something went wrong downloading {url}" +
+              Style.RESET_ALL)
         return False
     else:
         return filename
@@ -39,42 +36,57 @@ def download_file(url, filename):
 
 jars = {
     "1.16": {
-        "Vanilla": "https://piston-data.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar",
+        "Vanilla":
+        "https://piston-data.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar",
         "Spigot": "https://cdn.getbukkit.org/spigot/spigot-1.16.5.jar",
-        "CraftBukkit": "https://cdn.getbukkit.org/craftbukkit/craftbukkit-1.16.5.jar",
+        "CraftBukkit":
+        "https://cdn.getbukkit.org/craftbukkit/craftbukkit-1.16.5.jar",
         "Paper": "https://papermc.io/api/v2/paper/1.16.5/latest/download",
         "Purpur": "https://api.purpurmc.org/v2/purpur/1.16.5/latest/download",
     },
     "1.17": {
-        "Vanilla": "https://piston-data.mojang.com/v1/objects/a16d67e5807f57fc4e550299cf20226194497dc2/server.jar",
+        "Vanilla":
+        "https://piston-data.mojang.com/v1/objects/a16d67e5807f57fc4e550299cf20226194497dc2/server.jar",
         "Spigot": "https://download.getbukkit.org/spigot/spigot-1.17.1.jar",
-        "CraftBukkit": "https://download.getbukkit.org/craftbukkit/craftbukkit-1.17.1.jar",
+        "CraftBukkit":
+        "https://download.getbukkit.org/craftbukkit/craftbukkit-1.17.1.jar",
         "Paper": "https://papermc.io/api/v2/paper/1.17.1/latest/download",
-        "Pufferfish": "https://ci.pufferfish.host/job/Pufferfish-1.17/22/artifact/build/libs/Pufferfish-1.17.1-R0.1-SNAPSHOT.jar",
+        "Pufferfish":
+        "https://ci.pufferfish.host/job/Pufferfish-1.17/22/artifact/build/libs/Pufferfish-1.17.1-R0.1-SNAPSHOT.jar",
         "Purpur": "https://api.purpurmc.org/v2/purpur/1.19.4/latest/download",
     },
     "1.18": {
-        "Vanilla": "https://piston-data.mojang.com/v1/objects/c8f83c5655308435b3dcf03c06d9fe8740a77469/server.jar",
+        "Vanilla":
+        "https://piston-data.mojang.com/v1/objects/c8f83c5655308435b3dcf03c06d9fe8740a77469/server.jar",
         "Spigot": "https://download.getbukkit.org/spigot/spigot-1.18.2.jar",
-        "CraftBukkit": "https://download.getbukkit.org/craftbukkit/craftbukkit-1.18.2.jar",
+        "CraftBukkit":
+        "https://download.getbukkit.org/craftbukkit/craftbukkit-1.18.2.jar",
         "Paper": "https://papermc.io/api/v2/paper/1.18.2/latest/download",
-        "Pufferfish": "https://ci.pufferfish.host/job/Pufferfish-1.18/72/artifact/build/libs/pufferfish-paperclip-1.18.2-R0.1-SNAPSHOT-reobf.jar",
+        "Pufferfish":
+        "https://ci.pufferfish.host/job/Pufferfish-1.18/72/artifact/build/libs/pufferfish-paperclip-1.18.2-R0.1-SNAPSHOT-reobf.jar",
         "Purpur": "https://api.purpurmc.org/v2/purpur/1.18.2/latest/download",
     },
     "1.19": {
-        "Vanilla": "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar",
+        "Vanilla":
+        "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar",
         "Spigot": "https://download.getbukkit.org/spigot/spigot-1.19.4.jar",
-        "CraftBukkit": "https://download.getbukkit.org/craftbukkit/craftbukkit-1.19.4.jar",
+        "CraftBukkit":
+        "https://download.getbukkit.org/craftbukkit/craftbukkit-1.19.4.jar",
         "Paper": "https://papermc.io/api/v2/paper/1.19.4/latest/download",
-        "Pufferfish": "https://ci.pufferfish.host/job/Pufferfish-1.19/73/artifact/build/libs/pufferfish-paperclip-1.19.4-R0.1-SNAPSHOT-reobf.jar",
+        "Pufferfish":
+        "https://ci.pufferfish.host/job/Pufferfish-1.19/73/artifact/build/libs/pufferfish-paperclip-1.19.4-R0.1-SNAPSHOT-reobf.jar",
         "Purpur": "https://api.purpurmc.org/v2/purpur/1.19.4/latest/download",
     },
     "1.20": {
-        "Vanilla": "https://piston-data.mojang.com/v1/objects/5b868151bd02b41319f54c8d4061b8cae84e665c/server.jar",
+        "Vanilla":
+        "https://piston-data.mojang.com/v1/objects/5b868151bd02b41319f54c8d4061b8cae84e665c/server.jar",
         "Spigot": "https://download.getbukkit.org/spigot/spigot-1.20.2.jar",
-        "CraftBukkit": "https://download.getbukkit.org/craftbukkit/craftbukkit-1.20.2.jar",
-        "Paper": "https://papermc.io/ci/job/Paper-1.20/lastBuild/artifact/paperclip.jar",
-        "Pufferfish": "https://ci.pufferfish.host/job/Pufferfish-1.20/33/artifact/build/libs/pufferfish-paperclip-1.20.2-R0.1-SNAPSHOT-reobf.jar",
+        "CraftBukkit":
+        "https://download.getbukkit.org/craftbukkit/craftbukkit-1.20.2.jar",
+        "Paper":
+        "https://papermc.io/ci/job/Paper-1.20/lastBuild/artifact/paperclip.jar",
+        "Pufferfish":
+        "https://ci.pufferfish.host/job/Pufferfish-1.20/33/artifact/build/libs/pufferfish-paperclip-1.20.2-R0.1-SNAPSHOT-reobf.jar",
         "Purpur": "https://api.purpurmc.org/v2/purpur/1.20.2/latest/download",
     },
 }
@@ -83,28 +95,36 @@ java_install = {
     16: {
         "portable": {
             "Windows": {
-                "64bit": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.zip",
-                "32bit": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x86-32_windows_hotspot_16.0.2_7.zip",
+                "64bit":
+                "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.zip",
+                "32bit":
+                "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x86-32_windows_hotspot_16.0.2_7.zip",
             }
         },
         "installer": {
             "Windows": {
-                "64bit": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.msi",
-                "32bit": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x86-32_windows_hotspot_16.0.2_7.msi",
+                "64bit":
+                "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.msi",
+                "32bit":
+                "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x86-32_windows_hotspot_16.0.2_7.msi",
             }
         },
     },
     17: {
         "portable": {
             "Windows": {
-                "64bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.zip",
-                "32bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x86-32_windows_hotspot_17.0.9_9.zip",
+                "64bit":
+                "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.zip",
+                "32bit":
+                "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x86-32_windows_hotspot_17.0.9_9.zip",
             }
         },
         "installer": {
             "Windows": {
-                "64bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.msi",
-                "32bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x86-32_windows_hotspot_17.0.9_9.msi",
+                "64bit":
+                "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.msi",
+                "32bit":
+                "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x86-32_windows_hotspot_17.0.9_9.msi",
             }
         },
     },

@@ -5,7 +5,6 @@ import install_server
 from utils import *
 import sys
 
-
 os.chdir(os.path.abspath(os.path.dirname(sys.executable)))
 print(os.path.abspath(os.path.dirname(sys.executable)))
 if not os.path.exists("plugins"):
@@ -15,13 +14,10 @@ if not os.path.exists("plugins"):
         input("Press enter to exit...")
         sys.exit()
     else:
-        if (
-            choice(
+        if (choice(
                 f"Do you want to create the server in this directory? ({os.getcwd()})",
-                ["Yes", "No"],
-            )
-            == "Yes"
-        ):
+            ["Yes", "No"],
+        ) == "Yes"):
             install_server.install_server()
         else:
             print(
@@ -47,7 +43,13 @@ def help():
 
 
 class Command:
-    def __init__(self, name: str, bind, description: str, args=None, alias: list = []):
+
+    def __init__(self,
+                 name: str,
+                 bind,
+                 description: str,
+                 args=None,
+                 alias: list = []):
         self.name = name
         self.action = bind
         self.description = description
@@ -66,68 +68,80 @@ class Command:
 
 if __name__ == "__main__":
     command_hierarchy = {
-        "help": Command(name="help", description="Shows this help message", bind=help),
-        "start": Command(
+        "help":
+        Command(name="help", description="Shows this help message", bind=help),
+        "start":
+        Command(
             name="start",
             description="Starts the server",
             bind=install_server.run_server,
             args=f"{root_dir}/start.cmd",
         ),
-        "update plugins": Command(
+        "update plugins":
+        Command(
             name="update plugins",
             description="Updates all plugins",
             bind=plugin_manager.update_plugin_yml,
             args=f"{root_dir}/plugins",
             alias=["update plugin", "plugin update", "plugins update"],
         ),
-        "update jar": Command(
+        "update jar":
+        Command(
             name="update jar",
             description="Updates the server jar",
             bind=None,
             alias=["jar update"],
         ),
-        "install plugin": Command(
+        "install plugin":
+        Command(
             name="install plugin",
             description="Installs a plugin",
             bind=plugin_manager.plugin_install_process,
         ),
-        "create backup": Command(
+        "create backup":
+        Command(
             name="create backup",
             description="Creates a backup of your server files",
             bind=None,
             alias=["backup create", "make backup", "backup make"],
         ),
-        "clear": Command(
+        "clear":
+        Command(
             name="clear",
             description="Clears the console",
             bind=install_server.cls,
             alias=["cls"],
         ),
-        "delete plugin": Command(
+        "delete plugin":
+        Command(
             name="delete plugin",
             description="Deletes selected plugins",
             bind=None,
             alias=["plugin delete", "delete plugins", "plugins delete"],
         ),
-        "disable plugin": Command(
+        "disable plugin":
+        Command(
             name="disable plugin",
             description="Disables selected plugins",
             bind=None,
             alias=["plugin disable", "disable plugins", "plugins disable"],
         ),
-        "enable plugin": Command(
+        "enable plugin":
+        Command(
             name="enable plugin",
             description="Enables selected plugins",
             bind=None,
             alias=["plugin enable", "enable plugins", "plugins enable"],
         ),
-        "list plugins": Command(
+        "list plugins":
+        Command(
             name="list plugins",
             description="Lists all plugins",
             bind=None,
             alias=["plugins list", "list plugin"],
         ),
-        "exit": Command(name="exit", description="Exits the program", bind=sys.exit),
+        "exit":
+        Command(name="exit", description="Exits the program", bind=sys.exit),
     }
 
     command_list = {}
