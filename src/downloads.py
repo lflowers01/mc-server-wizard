@@ -1,25 +1,41 @@
 from fetch_versions import *
 from tqdm import tqdm
 from colorama import Fore, Style
+import os
+
 
 def download_file(url, filename):
     response = requests.get(url, stream=True)
 
-    total_size_in_bytes= int(response.headers.get('content-length', 0))
+    total_size_in_bytes = int(response.headers.get("content-length", 0))
     block_size = 1024
-    progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True, desc=filename, ncols=75, bar_format="{desc} {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} {rate_fmt} {postfix}")
 
-    with open(filename, 'wb') as file:
+    progress_bar = tqdm(
+        total=total_size_in_bytes,
+        unit="iB",
+        unit_scale=True,
+        desc=os.path.basename(filename),
+        ascii=True,
+        ncols=75,
+        bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}",
+    )
+
+    with open(filename, "wb") as file:
         for data in response.iter_content(block_size):
             progress_bar.update(len(data))
             file.write(data)
     progress_bar.close()
 
     if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
-        print(Fore.RED + f"ERROR, something went wrong downloading {url}" + Style.RESET_ALL)
+        print(
+            Fore.RED
+            + f"ERROR, something went wrong downloading {url}"
+            + Style.RESET_ALL
+        )
         return False
     else:
         return filename
+
 
 jars = {
     "1.16": {

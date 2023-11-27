@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-import inquirer
 from inquirer import *
 from colorama import Fore, Style
 from downloads import *
@@ -7,30 +5,31 @@ import subprocess
 import os
 import platform
 from time import sleep
-import stat
 from urllib.parse import urlparse
-import pylnk3
 import fetch_versions
 import win32com.client
 from utils import *
+import sys
 
 global main_dir
 
 
-def main():
+def install_server():
     cls()
     print(
         Fore.YELLOW
         + Style.BRIGHT
-        + "Welcome to the Minecraft Server Installer!"
+        + "Minecraft Server Installer Wizard ~"
         + Style.RESET_ALL
     )
     print(
-        "This installer will guide you through the process of installing a Minecraft server."
+        f"This installer will guide you through the process of installing a Minecraft server."
     )
-    next_step("Directory Settings", 1, 4, False)
+
+    next_step("Version Selection", 1, 5, False)
     version = None
-    main_dir = None
+    main_dir = os.path.dirname(sys.executable)
+    """
     while main_dir == None:
         main_dir = text(
             "Enter the name of the directory you want to install the server in (will create a folder with the given name)"
@@ -53,9 +52,9 @@ def main():
         + f"Directory: {Fore.WHITE}{main_dir}{Fore.GREEN} created successfully"
         + Style.RESET_ALL
     )
+    """
     while version == None:
         version = text("Enter the version of the server you want to install (1.XX.XX)")
-        print(version, check_valid_version(version))
         if len(version.split(".")) != 3 or not check_valid_version(version):
             print(
                 Fore.RED + f"Invalid version! {Fore.WHITE}(1.XX.XX)" + Style.RESET_ALL
@@ -75,14 +74,13 @@ def main():
         target_java = 8
     else:
         target_java = 17
-    print(target_java)
     jar_select = None
     print(
         Fore.GREEN
         + f"Version: {Fore.WHITE}{version}{Fore.GREEN} selected"
         + Style.RESET_ALL
     )
-    next_step("JAR/Java Setup", 2, 4)
+    next_step("JAR Dowload", 2, 5)
     while jar_select == None:
         if legacy:
             print(
@@ -135,7 +133,7 @@ def main():
                     os.path.join(main_dir, "server.jar"),
                 )
                 jar_select = "server.jar"
-
+    next_step("Java Setup", 3, 5)
     java_version = None
     install_java = False
     try:
@@ -237,7 +235,7 @@ def main():
 
     memory = None
 
-    next_step("Server Settings", 3, 4)
+    next_step("Startup Settings", 4, 5)
     while memory == None:
         memory = text(
             "Enter the amount of memory you want to allocate to the server (in GB)"
@@ -254,9 +252,8 @@ def main():
     start_script = create_start_script(memory, main_dir, java_path, gui)
     if not start_script:
         return
-    print(start_script)
     print(Fore.GREEN + "Server installation complete!" + Style.RESET_ALL)
-    next_step("EULA and final steps", 4, 4)
+    next_step("EULA and final steps", 5, 5)
     skip_eula = False
     if inter_version <= 7 and version != "1.7.10":
         skip_eula = True
@@ -269,7 +266,7 @@ def main():
     if not skip_eula:
         print(Fore.CYAN + "Starting server..." + Style.RESET_ALL)
         os.chdir(main_dir)
-        run_server(start_script)
+        run_server("start.cmd")
         eula_path = os.path.join("eula.txt")
         timeout = 0
         while not os.path.isfile(eula_path):
@@ -291,8 +288,6 @@ def main():
             file.write(file_data.replace("eula=false", "eula=true"))
             file.truncate()
         print(Fore.GREEN + "EULA accepted!" + Style.RESET_ALL)
-        print(jar_select)
-        print(list(plugins.keys()))
     if not os.path.exists("plugins") and not jar_select == "Vanilla":
         os.mkdir("plugins")
 
@@ -305,16 +300,13 @@ def main():
             == "Yes"
         ):
             print(Fore.CYAN + "Creating shortcut on your desktop..." + Style.RESET_ALL)
-            create_shortcut(shortcut_path, start_script, "")
+            create_shortcut(target="start.cmd", path=shortcut_path, arguments="")
             print(Fore.GREEN + "Shortcut created!" + Style.RESET_ALL)
     cls()
-    print(
-        Fore.GREEN
-        + Style.BRIGHT
-        + "Installation complete!"
-        + Style.RESET_ALL
-        + f" You can now start the server by running {start_script}"
-    )
+    print(Fore.GREEN + Style.BRIGHT + "Server installation complete!" + Style.RESET_ALL)
+    if choice("Do you want to start the server now?", ["Yes", "No"], "Yes") == "Yes":
+        run_server("start.cmd")
+    return main_dir
 
 
 def next_step(
@@ -335,7 +327,7 @@ def next_step(
 
 
 def run_server(start_script: str = "start.cmd"):
-    subprocess.Popen("start cmd /c " + start_script, stdin=subprocess.PIPE, shell=True)
+    os.system(start_script)
 
 
 def create_start_script(
@@ -378,7 +370,3 @@ def create_shortcut(path: str, target: str, arguments: str = ""):
     shortcut.Arguments = arguments
     shortcut.WorkingDirectory = wd
     shortcut.save()
-
-
-if __name__ == "__main__":
-    main()

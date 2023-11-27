@@ -10,12 +10,15 @@ import yaml
 from bs4 import BeautifulSoup
 
 
-root = os.path.abspath("mcserver")
-plugin_path = os.path.abspath(f"{root}/plugins")
-if not os.path.exists(f"{root}/plugin_data"):
-    os.mkdir(f"{root}/plugin_data")
+def set_root(root):
+    global plugin_path, yml_path
+    plugin_path = os.path.abspath(f"{root}/plugins")
+    if not os.path.exists(f"{root}/plugin_data"):
+        os.mkdir(f"{root}/plugin_data")
 
-yml_path = os.path.abspath(f"{root}/plugin_data")
+    yml_path = os.path.abspath(f"{root}/plugin_data")
+
+
 ptypes = ["spigot", "bukkit"]
 
 
@@ -79,6 +82,7 @@ def sort_results(r: list, query: str):
 
 
 def update_plugin_yml(path):
+    c = 0
     for file in os.listdir(path):
         if file.endswith(".jar"):
             filename = os.path.basename(file)
@@ -99,7 +103,8 @@ def update_plugin_yml(path):
             with open(yml_file, "w") as file:
                 yaml.dump(data, file)
             if data["version-id"] != get_version_id(type, id, data["slug"]):
-                print(f"{Fore.GREEN}Updating {name}{Style.RESET_ALL}")
+                c += 1
+                print(f"{Fore.CYAN}Updating {name}{Style.RESET_ALL}")
                 download_plugin(
                     plugin=Plugin(
                         SearchResult(type=type, name=name, id=id, slug=data["slug"])
@@ -109,6 +114,10 @@ def update_plugin_yml(path):
                 data["version-id"] = get_version_id(type, id, data["slug"])
                 with open(yml_file, "w") as file:
                     yaml.dump(data, file)
+    if c == 0:
+        print(f"{Fore.GREEN}No updates available{Style.RESET_ALL}")
+    else:
+        print(f"{Fore.GREEN}Updated {c} plugins{Style.RESET_ALL}")
 
 
 def get_longest(l: list):
@@ -185,8 +194,11 @@ def download_plugin(plugin: SearchResult, target):
     return Plugin(plugin=plugin)
 
 
-def plugin_install_process():
-    search_results = Search(text("Enter a plugin name"))
+def plugin_install_process(ref):
+    if not ref:
+        search_results = Search(text("Enter a plugin name"))
+    else:
+        search_results = Search(ref)
     if len(search_results.results) == 0:
         print(f"{Fore.RED}No plugins found{Style.RESET_ALL}")
         return
@@ -195,5 +207,9 @@ def plugin_install_process():
             "Found plugins", search_results.formatted_results, return_index=True
         )
     plugin = search_results.results[selection]
+    print(f"{Fore.CYAN}Installing {plugin.name}{Style.RESET_ALL}")
     download_plugin(plugin, plugin_path)
-    update_plugin_yml(plugin_path)
+    print(f"{Fore.GREEN}Installed {plugin.name}{Style.RESET_ALL}")
+
+
+#   update_plugin_yml(plugin_path)
