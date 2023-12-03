@@ -5,7 +5,7 @@ from time import sleep
 import sys
 import win32com.client
 from colorama import Fore, Style
-from downloads import download_file, java_install
+from downloads import download_file
 import fetch_versions as fetch_ver
 from utils import choice, text
 
@@ -92,60 +92,47 @@ def install_server():
 
     java_path = "java"
     if install_java:
-        if (choice(
-                "Java is not installed or is outdated! Do you want to install it now?",
-            ["Yes", "No"],
-                "Yes",
-        ) == "Yes"):
+        if choice("Java is not installed or is outdated! Do you want to install it now?", ["Yes", "No"], "Yes") == "Yes":
             if platform.system() == "Linux":
                 try:
                     print(Fore.CYAN + "Downloading Java..." + Style.RESET_ALL)
                     subprocess.run(["sudo", "apt", "install", "-y", "openjdk-17-jdk"], check=True)
                 except subprocess.CalledProcessError as e:
                     print(Fore.RED + f"ERROR: While trying to install Java 17:\n{Style.RESET_ALL}{e}")
-                    print(Fore.YELLOW + "Try installing Java 17 JDK yourself" + Style.RESET_ALL)
+                    print(Fore.YELLOW + f"Try installing Java {target_java} JDK yourself" + Style.RESET_ALL)
                     return
             if platform.system() == "Windows":
-                if (choice(
-                        "Do you want to install Java to be portable?",
-                    ["Yes", "No"],
-                        "Yes",
-                ) == "No"):
-                    portable = "installer"
-                    install_extension = ".msi"
-                else:
-                    portable = "portable"
-                    install_extension = ".zip"
-                print(Fore.CYAN + "Downloading Java..." + Style.RESET_ALL)
-                download_file(
-                    java_install[target_java][portable][platform.system()][platform.architecture()[0]],
-                    f"{main_dir}/java{install_extension}",
-                )
-                if portable == "portable":
-                    print(Fore.CYAN + "Extracting Java..." + Style.RESET_ALL)
-                    subprocess.run([
-                        "tar",
-                        "-xf",
-                        f"{main_dir}/java{install_extension}",
-                        "-C",
-                        main_dir,
-                    ], check=True)
-                    os.remove(f"{main_dir}/java{install_extension}")
+                # install_extension = ".zip"
+                portable = "portable"
 
+                architecture = platform.architecture()[0]
+                if architecture == '32bit':
+                    architecture = 'x32'
+                elif architecture == '64bit':
+                    architecture = 'x64'
+                else:
+                    print(Fore.RED + "ERROR: Unknown architecture!" + Style.RESET_ALL)
+                    return
+                l = f"https://api.adoptium.net/v3/binary/latest/{target_java}/ga/windows/{architecture}/jdk/hotspot/normal/eclipse?project=jdk"
+                print(l)
+                z = download_file(l, f"{main_dir}/java.zip")
+                if portable == "portable":
+                    print(Fore.CYAN + "Extracting Java..." + Style.RESET_ALL + z)
+                    print("java.zip path : " + z)
+                    subprocess.run(['unzip', '-o', z, '-d', main_dir], check=True)
+                    if os.path.exists(z):
+                        print(f"The file exists: {z}")
+                        os.remove(z)
+                    else:
+                        print(f"The file does not exist: {z}")
+                    os.remove(z)
                     for item in os.listdir(main_dir):
                         if item.startswith("jdk"):
                             java_path = item
                             java_path = '"' + str(java_path) + "/bin/java.exe" + '"'
                             break
                     print(Fore.GREEN + f"Java installed! {Fore.WHITE}{java_path}" + Style.RESET_ALL)
-
-                else:
-                    print(Fore.CYAN + "Installing Java..." + Style.RESET_ALL)
-                    subprocess.run([f"{main_dir}/java{install_extension}"], check=True)
-                    os.remove(f"{main_dir}/java{install_extension}")
-
     memory = None
-
     next_step("Startup Settings", 4, 5)
     while memory is None:
         memory = text("Enter the amount of memory you want to allocate to the server (in GB)")
@@ -195,7 +182,7 @@ def install_server():
         desktop = os.path.join(os.path.expanduser("~"), "Desktop")
         shortcut_path = os.path.join(desktop, f"{main_dir}.lnk")
         print(shortcut_path, start_script)
-        if (choice("Do you want to create a desktop shortcut?", ["Yes", "No"], "Yes") == "Yes"):
+        if choice("Do you want to create a desktop shortcut?", ["Yes", "No"], "Yes") == "Yes":
             print(Fore.CYAN + "Creating shortcut on your desktop..." + Style.RESET_ALL)
             create_shortcut(target="start.cmd", path=shortcut_path, arguments="")
             print(Fore.GREEN + "Shortcut created!" + Style.RESET_ALL)

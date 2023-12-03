@@ -1,12 +1,11 @@
 import os
-import zipfile
+from difflib import SequenceMatcher
 import yaml
 import requests
-from downloads import download_file
-from colorama import Fore, Style
-from difflib import SequenceMatcher
-from utils import *
 from bs4 import BeautifulSoup
+from colorama import Fore, Style
+from downloads import download_file
+from utils import *
 
 
 def set_root(root):
@@ -32,8 +31,7 @@ def get_download_url(plugin):
 
 def get_version_id(type, id, slug):
     if type[0] == "s":
-        return requests.get(
-            f"https://api.spiget.org/v2/resources/{id}").json()["version"]
+        return requests.get(f"https://api.spiget.org/v2/resources/{id}").json()["version"]
     elif type[0] == "b":
         r = requests.get(f"https://dev.bukkit.org/projects/{slug}/files")
         soup = BeautifulSoup(r.content, "html.parser")
@@ -51,9 +49,7 @@ class Plugin:
         self.type = plugin.type
         self.slug = plugin.slug
         self.name = plugin.name
-        self.version_id = get_version_id(type=self.type,
-                                         id=self.id,
-                                         slug=self.slug)
+        self.version_id = get_version_id(type=self.type, id=self.id, slug=self.slug)
         self.save_to_yml()
 
     def save_to_yml(self):
@@ -62,8 +58,7 @@ class Plugin:
             "version-id": self.version_id,
             "slug": self.slug,
         }
-        with open(f"{yml_path}/{self.name}~{self.type[0]}~{self.id}.yml",
-                  "w") as yml:
+        with open(f"{yml_path}/{self.name}~{self.type[0]}~{self.id}.yml", "w") as yml:
             yaml.dump(to_dict, yml)
 
     def get_plugin_yml(self, jar_path):
@@ -78,8 +73,7 @@ class Plugin:
 
 def sort_results(r: list, query: str):
     for result in r:
-        similarity = SequenceMatcher(None, query.lower(),
-                                     result.name.lower()).ratio()
+        similarity = SequenceMatcher(None, query.lower(), result.name.lower()).ratio()
         result.search_volume = similarity
     return sorted(r, key=lambda x: x.search_volume, reverse=True)
 
@@ -97,7 +91,7 @@ def update_plugin_yml(path):
             yml_file = f"{yml_path}/{name}~{type[0]}~{id}.yml"
 
             if not os.path.exists(yml_file):
-                os.mknod(yml_file)
+                os.mkdir(yml_file)
             with open(yml_file, "r") as file:
                 data = yaml.safe_load(file)
             data["name"] = name
@@ -109,11 +103,7 @@ def update_plugin_yml(path):
                 c += 1
                 print(f"{Fore.CYAN}Updating {name}{Style.RESET_ALL}")
                 download_plugin(
-                    plugin=Plugin(
-                        SearchResult(type=type,
-                                     name=name,
-                                     id=id,
-                                     slug=data["slug"])),
+                    plugin=Plugin(SearchResult(type=type, name=name, id=id, slug=data["slug"])),
                     target=plugin_path,
                 )
                 data["version-id"] = get_version_id(type, id, data["slug"])
@@ -135,12 +125,7 @@ def get_longest(l: list):
 
 class SearchResult:
 
-    def __init__(self,
-                 type: ptypes,
-                 name,
-                 id: int,
-                 search_volume=0,
-                 slug=None):
+    def __init__(self, type: ptypes, name, id: int, search_volume=0, slug=None):
         self.type = type
         self.name = name
         self.id = id
@@ -162,10 +147,7 @@ class Search:
         self.results = self.get_results()
 
         l = get_longest([i.name for i in self.results][0:9])
-        self.formatted_results = [
-            f"{i.name}{' ' * (l - len(i.name)) + Fore.WHITE + Style.DIM} │ {Style.RESET_ALL}{i.type_formatted}"
-            for i in self.results
-        ][0:9]
+        self.formatted_results = [f"{i.name}{' ' * (l - len(i.name)) + Fore.WHITE + Style.DIM} │ {Style.RESET_ALL}{i.type_formatted}" for i in self.results][0:9]
 
     def spigot_search(self):
         link = f"https://api.spiget.org/v2/search/resources/{self.query}?field=name&sort=download&size=10"
@@ -181,16 +163,14 @@ class Search:
     def get_results(self):
         results = []
         for result in self.spigot:
-            results.append(SearchResult("spigot", result["name"],
-                                        result["id"]))
+            results.append(SearchResult("spigot", result["name"], result["id"]))
         for result in self.bukkit:
-            results.append(
-                SearchResult(
-                    type="bukkit",
-                    name=result["name"],
-                    id=result["id"],
-                    slug=result["slug"],
-                ))
+            results.append(SearchResult(
+                type="bukkit",
+                name=result["name"],
+                id=result["id"],
+                slug=result["slug"],
+            ))
         return sort_results(results, self.query)
 
 
@@ -215,9 +195,7 @@ def plugin_install_process(ref):
         print(f"{Fore.RED}No plugins found{Style.RESET_ALL}")
         return
     else:
-        selection = choice("Found plugins",
-                           search_results.formatted_results,
-                           return_index=True)
+        selection = choice("Found plugins", search_results.formatted_results, return_index=True)
     plugin = search_results.results[selection]
     print(f"{Fore.CYAN}Installing {plugin.name}{Style.RESET_ALL}")
     download_plugin(plugin, plugin_path)

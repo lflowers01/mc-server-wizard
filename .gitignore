@@ -4,6 +4,7 @@ minecraft
 __pycache__
 mcserver
 *.jar
-.spec
+*.spec
+*.lnk
 build/*
 dist/*

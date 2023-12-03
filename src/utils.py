@@ -1,7 +1,7 @@
-import pylnk3
 from urllib.parse import urlparse
 from colorama import Fore
-from inquirer import *
+import inquirer
+
 
 def is_valid_url(url):
     try:
@@ -11,40 +11,19 @@ def is_valid_url(url):
         return False
 
 
+def text(q: str, default: str = None):
+    questions = [inquirer.Text("text", message=q + Fore.YELLOW, default=default)]
+    return inquirer.prompt(questions)["text"]
 
 
-def text(q:str, default:str = None):
-    questions = [
-        Text(
-            "text",
-            message=q + Fore.YELLOW,
-            default=default
-        )
-    ]
-    return prompt(questions)["text"]
-
-
-def choice(q:str, options: [str], default:str = None, return_index:bool = False):
-    questions = [
-        List(
-            "choice",
-            message=q,
-            choices=options,
-            default=default
-        )
-    ]
+def choice(q: str, options: [str], default: str = None, return_index: bool = False):
+    questions = [inquirer.List("choice", message=q, choices=options, default=default)]
     if return_index:
-        return options.index(prompt(questions)["choice"])
+        return options.index(inquirer.prompt(questions)["choice"])
     else:
-        return prompt(questions)["choice"]
+        return inquirer.prompt(questions)["choice"]
 
-def checkbox(q:str, options: [str], default:str = None):
-    questions = [
-        Checkbox(
-            "choice",
-            message=q,
-            choices=options,
-            default=default
-        )
-    ]
-    return prompt(questions)["choice"]
+
+def checkbox(q: str, options: [str], default: str = None):
+    questions = [inquirer.Checkbox("choice", message=q, choices=options, default=default)]
+    return inquirer.prompt(questions)["choice"]
