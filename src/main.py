@@ -55,7 +55,7 @@ if __name__ == "__main__":
             input("Press enter to exit...")
             sys.exit()
         else:
-            if (choice(f"Do you want to create the server in this directory? ({os.getcwd()})", ["Yes", "No"]) == "Yes"):
+            if choice(f"Do you want to create the server in this directory? ({os.getcwd()})", ["Yes", "No"]) == "Yes":
                 install_server.install_server()
             else:
                 print("Please put this program in the directory you want to create the server in")
@@ -112,8 +112,9 @@ if __name__ == "__main__":
     print(COMMAND_HIERARCHY.values())
     for command in COMMAND_HIERARCHY.values():
         command_list[command.name] = command
-        for a in command.alias:
-            command_list[a] = command
+        if command.alias is not None:
+            for a in command.alias:
+                command_list[a] = command
 
     while True:
 
@@ -124,7 +125,7 @@ if __name__ == "__main__":
         user_input = user_input.lower().rstrip()
         if user_input in command_list:
             if command_list[user_input].action is not None:
-                command_list[user_input].execute(query)
+                command_list[user_input].execute(user_input)
             else:
                 print(Fore.RED + "Command not set" + Style.RESET_ALL)
         else:

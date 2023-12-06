@@ -36,7 +36,7 @@ def get_version_id(type, id, slug):
         r = requests.get(f"https://dev.bukkit.org/projects/{slug}/files")
         soup = BeautifulSoup(r.content, "html.parser")
         version_id = soup.find("tbody").find("a")["href"]
-        if version_id != None:
+        if version_id is not None:
             return version_id.split("/")[-2]
         else:
             return None

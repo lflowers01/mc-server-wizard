@@ -1,4 +1,50 @@
+import platform
 import requests
+
+java_install = {
+    16: {
+        "portable": {
+            "Windows": {
+                "64bit": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.zip",
+                "32bit": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x86-32_windows_hotspot_16.0.2_7.zip",
+            }
+        },
+        "installer": {
+            "Windows": {
+                "64bit": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.msi",
+                "32bit": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x86-32_windows_hotspot_16.0.2_7.msi",
+            }
+        },
+    },
+    17: {
+        "portable": {
+            "Windows": {
+                "64bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.zip",
+                "32bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x86-32_windows_hotspot_17.0.9_9.zip",
+            }
+        },
+        "installer": {
+            "Windows": {
+                "64bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.msi",
+                "32bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x86-32_windows_hotspot_17.0.9_9.msi",
+            }
+        },
+    },
+    8: {
+        "portable": {
+            "Windows": {
+                "64bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.zip",
+                "32bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x86-32_windows_hotspot_17.0.9_9.zip",
+            }
+        },
+        "installer": {
+            "Windows": {
+                "64bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.msi",
+                "32bit": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9.1/OpenJDK17U-jdk_x86-32_windows_hotspot_17.0.9_9.msi",
+            }
+        },
+    }
+}
 
 
 def latest_mc_version():
@@ -96,6 +142,8 @@ def check_valid_version(version: str):
     return False
 
 
-supported_types = ["Vanilla", "Craftbukkit", "Spigot", "Paper", "Pufferfish", "Purpur"]
+def get_java_link(version: int, architecture: str):
+    return java_install[version]["portable"][platform.system()][architecture]
 
-print(check_valid_version("1.23.5"))
+
+supported_types = ["Vanilla", "Craftbukkit", "Spigot", "Paper", "Pufferfish", "Purpur"]

@@ -1,9 +1,10 @@
 import subprocess
 import os
+import zipfile
 import platform
 from time import sleep
 import sys
-import win32com.client
+import win32com.clients
 from colorama import Fore, Style
 from downloads import download_file
 import fetch_versions as fetch_ver
@@ -106,26 +107,17 @@ def install_server():
                 portable = "portable"
 
                 architecture = platform.architecture()[0]
-                if architecture == '32bit':
-                    architecture = 'x32'
-                elif architecture == '64bit':
-                    architecture = 'x64'
-                else:
-                    print(Fore.RED + "ERROR: Unknown architecture!" + Style.RESET_ALL)
-                    return
-                l = f"https://api.adoptium.net/v3/binary/latest/{target_java}/ga/windows/{architecture}/jdk/hotspot/normal/eclipse?project=jdk"
-                print(l)
-                z = download_file(l, f"{main_dir}/java.zip")
+                link = fetch_ver.get_java_link(target_java, architecture)
+                print(link)
+                headers = {'accept': '*/*'}
+                z = download_file(link, f"{main_dir}/java.zip", headers=headers)
                 if portable == "portable":
                     print(Fore.CYAN + "Extracting Java..." + Style.RESET_ALL + z)
                     print("java.zip path : " + z)
-                    subprocess.run(['unzip', '-o', z, '-d', main_dir], check=True)
-                    if os.path.exists(z):
-                        print(f"The file exists: {z}")
-                        os.remove(z)
-                    else:
-                        print(f"The file does not exist: {z}")
+                    with zipfile.ZipFile(z, 'r') as zip_ref:
+                        zip_ref.extractall(f"{main_dir}")
                     os.remove(z)
+
                     for item in os.listdir(main_dir):
                         if item.startswith("jdk"):
                             java_path = item

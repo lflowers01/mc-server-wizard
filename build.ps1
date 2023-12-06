@@ -6,6 +6,7 @@ if ($clean) {
     Remove-Item -Recurse -Force dist
     Remove-Item -Recurse -Force build
 }
+Get-ChildItem -Filter "*.spec" -Recurse | Remove-Item -Force
 pyinstaller --onefile -n mc-utils src\main.py
 if ($test) {
     .\dist\mc-utils.exe
