@@ -10,13 +10,14 @@ from utils import choice
 
 global COMMAND_HIERARCHY
 COMMAND_HIERARCHY = {}
+command_list = {}
 
 
 def chelp():
     print(Fore.WHITE + Style.BRIGHT + "Commands:" + Style.RESET_ALL)
     for c in COMMAND_HIERARCHY.items():
-        name = str(COMMAND_HIERARCHY[c].name)
-        description = str(COMMAND_HIERARCHY[c].description)
+        name = str(COMMAND_HIERARCHY[c[0]].name)
+        description = str(COMMAND_HIERARCHY[c[0]].description)
         print(
             Fore.GREEN + name,
             Fore.WHITE + "-",
@@ -34,13 +35,12 @@ class Command:
         self.alias = alias
 
     def execute(self, ref=None):
-        if ref:
-            self.action(ref)
+        if self.name == "install plugin":
+            self.args = ref
+        if self.args is None:
+            self.action()
         else:
-            if self.args is None:
-                self.action()
-            else:
-                self.action(self.args)
+            self.action(self.args)
 
 
 print(__name__)
@@ -107,9 +107,14 @@ if __name__ == "__main__":
             bind=None,
             alias=["plugin delete", "delete plugins", "plugins delete"],
         ),
+        "exit": Command(
+            name="exit",
+            description="Exits the program",
+            bind=exit,
+            alias=["quit"],
+        )
     }
-    command_list = {}
-    print(COMMAND_HIERARCHY.values())
+
     for command in COMMAND_HIERARCHY.values():
         command_list[command.name] = command
         if command.alias is not None:
@@ -117,7 +122,7 @@ if __name__ == "__main__":
                 command_list[a] = command
 
     while True:
-
+        query = None
         user_input = input(Fore.GREEN + ">>> " + Style.RESET_ALL)
         if "plugin" in user_input and len(user_input.split(" ")) > 2:
             query = user_input.split(" ")[-1]
@@ -125,7 +130,10 @@ if __name__ == "__main__":
         user_input = user_input.lower().rstrip()
         if user_input in command_list:
             if command_list[user_input].action is not None:
-                command_list[user_input].execute(user_input)
+                if query is None:
+                    command_list[user_input].execute()
+                else:
+                    command_list[user_input].execute(query)
             else:
                 print(Fore.RED + "Command not set" + Style.RESET_ALL)
         else:

@@ -4,7 +4,7 @@ import zipfile
 import platform
 from time import sleep
 import sys
-import win32com.clients
+# import win32com.clients
 from colorama import Fore, Style
 from downloads import download_file
 import fetch_versions as fetch_ver
