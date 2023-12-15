@@ -1,6 +1,3 @@
-'''
-Manages installation of server install script, server JAR and inital setup
-'''
 import sys
 import os
 from colorama import Fore, Style
@@ -35,7 +32,10 @@ class Command:
         self.alias = alias
 
     def execute(self, ref=None):
-        if self.name == "install plugin":
+        if self.name == "install plugin" or self.name == "delete plugin":
+            if ref is None or ref == "":
+                print(f"{Fore.RED}Please specify a plugin name{Style.RESET_ALL}")
+                return
             self.args = ref
         if self.args is None:
             self.action()
@@ -78,22 +78,22 @@ if __name__ == "__main__":
             args=f"{root_dir}/plugins",
             alias=["update plugin", "plugin update", "plugins update"],
         ),
-        "update jar": Command(
-            name="update jar",
-            description="Updates the server jar",
-            bind=None,
-            alias=["jar update"],
-        ),
         "install plugin": Command(
             name="install plugin",
             description="Installs a plugin",
             bind=plugin_manager.plugin_install_process,
         ),
+        "list plugins": Command(
+            name="list plugins",
+            description="Lists all plugins",
+            bind=plugin_manager.list_plugins,
+            alias=["plugins list", "list plugin", "plugin list"],
+        ),
         "create backup": Command(
             name="create backup",
             description="Creates a backup of your server files",
-            bind=None,
-            alias=["backup create", "make backup", "backup make"],
+            bind=install_server.create_backup,
+            alias=["backup create", "make backup", "backup make", "backup"],
         ),
         "clear": Command(
             name="clear",
@@ -104,15 +104,15 @@ if __name__ == "__main__":
         "delete plugin": Command(
             name="delete plugin",
             description="Deletes selected plugins",
-            bind=None,
+            bind=plugin_manager.delete_plugin,
             alias=["plugin delete", "delete plugins", "plugins delete"],
         ),
         "exit": Command(
             name="exit",
             description="Exits the program",
-            bind=exit,
+            bind=None,
             alias=["quit"],
-        )
+        ),
     }
 
     for command in COMMAND_HIERARCHY.values():

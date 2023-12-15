@@ -202,4 +202,22 @@ def plugin_install_process(ref):
     print(f"{Fore.GREEN}Installed {plugin.name}{Style.RESET_ALL}")
 
 
-#   update_plugin_yml(plugin_path)
+def list_plugins():
+    for file in os.listdir(plugin_path):
+        if file.endswith(".jar"):
+            print(file.split("~")[0])
+
+
+def delete_plugin(q):
+    q = q.lower().rstrip()
+    print(q)
+    for file in os.listdir(plugin_path):
+        if file.split("~")[0].lower() == q:
+            os.remove(f"{plugin_path}/{file}")
+            print(f"{Fore.GREEN}Deleted {q}.jar{Style.RESET_ALL}")
+    for file in os.listdir(yml_path):
+        if file.split("~")[0].lower() == q:
+            os.remove(f"{yml_path}/{file}")
+            print(f"{Fore.GREEN}Deleted {q}.yml{Style.RESET_ALL}")
+            return
+    print(f"{Fore.RED}Plugin not found{Style.RESET_ALL}")

@@ -1,14 +1,17 @@
 import subprocess
+from datetime import datetime
 import os
 import zipfile
 import platform
 from time import sleep
 import sys
-# import win32com.clients
+import win32com.client
 from colorama import Fore, Style
 from downloads import download_file
 import fetch_versions as fetch_ver
 from utils import choice, text
+
+main_dir = os.path.dirname(sys.executable)
 
 
 def install_server():
@@ -18,7 +21,6 @@ def install_server():
 
     next_step("Version Selection", 1, 5, False)
     version = None
-    main_dir = os.path.dirname(sys.executable)
 
     while version is None:
         version = text("Enter the version of the server you want to install (1.XX.XX)")
@@ -233,5 +235,35 @@ def create_shortcut(path: str, target: str, arguments: str = ""):
     shortcut.save()
 
 
-if __name__ == "__main__":
-    pass
+def make_archive(output_filename, source_dir):
+    with zipfile.ZipFile(output_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(source_dir):
+            # Skip directories that contain "jdk" or "backup"
+            if "jdk" in root or "backup" in root:
+                continue
+            for file in files:
+                # Skip .exe files
+                if file.endswith('.exe'):
+                    continue
+                full_path = os.path.join(root, file)
+                relative_path = os.path.relpath(full_path, source_dir)
+                print(f'Adding {relative_path} to archive...')
+                zipf.write(full_path, relative_path)
+
+
+def create_backup():
+    source_dir = os.getcwd()
+
+    # Define the backup directory
+    backup_dir = f"{source_dir}/backups"
+
+    # Define the name and full path for the zip file
+    zip_name = f"backups-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.zip"
+    zip_path = os.path.join(backup_dir, zip_name)
+
+    if not os.path.exists(backup_dir):
+        os.mkdir(backup_dir)
+    print(Fore.CYAN + "Creating backup..." + Style.RESET_ALL)
+    make_archive(zip_path, source_dir)
+    print(Fore.GREEN + "Backup created!" + Style.RESET_ALL)
+    return
