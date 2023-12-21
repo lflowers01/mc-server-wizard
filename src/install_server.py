@@ -197,6 +197,7 @@ def next_step(title: str = None, step: int = None, total_steps: int = None, clea
 
 
 def run_server(start_script: str = "start.cmd"):
+    print("Starting server...")
     os.system(start_script)
 
 

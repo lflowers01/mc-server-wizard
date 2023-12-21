@@ -1,5 +1,9 @@
 import sys
 import os
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.formatted_text import FormattedText
+
 from colorama import Fore, Style
 import plugin_manager
 import install_server
@@ -8,6 +12,10 @@ from utils import choice
 global COMMAND_HIERARCHY
 COMMAND_HIERARCHY = {}
 command_list = {}
+
+
+def quit_program():
+    sys.exit()
 
 
 def chelp():
@@ -32,7 +40,7 @@ class Command:
         self.alias = alias
 
     def execute(self, ref=None):
-        if self.name == "install plugin" or self.name == "delete plugin":
+        if self.name == "install plugin" or self.name == "delete plugin" or self.name == "disable plugin":
             if ref is None or ref == "":
                 print(f"{Fore.RED}Please specify a plugin name{Style.RESET_ALL}")
                 return
@@ -41,6 +49,14 @@ class Command:
             self.action()
         else:
             self.action(self.args)
+
+
+def completer(text, state):
+    options = [i for i in command_list if i.startswith(text)]
+    if state < len(options):
+        return options[state]
+    else:
+        return None
 
 
 print(__name__)
@@ -110,20 +126,27 @@ if __name__ == "__main__":
         "exit": Command(
             name="exit",
             description="Exits the program",
-            bind=None,
+            bind=quit_program,
             alias=["quit"],
         ),
+        "disable plugin": Command(
+            name="disable plugin",
+            description="Disables/enables a plugin",
+            bind=plugin_manager.disable_plugin,
+            alias=["plugin disable", "disable plugins", "plugins disable", "plugin enable", "enable plugin", "enable plugins", "plugins enable"],
+        ),
     }
-
     for command in COMMAND_HIERARCHY.values():
         command_list[command.name] = command
         if command.alias is not None:
             for a in command.alias:
                 command_list[a] = command
 
+    completer = WordCompleter(COMMAND_HIERARCHY, ignore_case=True)
+
     while True:
         query = None
-        user_input = input(Fore.GREEN + ">>> " + Style.RESET_ALL)
+        user_input = prompt(FormattedText([('fg:ansiblue', '>>> ')]), completer=completer)
         if "plugin" in user_input and len(user_input.split(" ")) > 2:
             query = user_input.split(" ")[-1]
             user_input = user_input.replace(query, "")
