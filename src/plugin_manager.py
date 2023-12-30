@@ -227,12 +227,13 @@ def disable_plugin(q):
     q = q.lower().rstrip()
     print(q)
     for file in os.listdir(os.path.abspath(plugin_path)):
-        if file.endswith(".disabled"):
-            if file.split(".")[0].split("~")[0].lower() == q:
-                os.rename(f"{plugin_path}/{file}", f"{plugin_path}/{file.split('.')[0]}.jar")
-                print(f"{Fore.GREEN}Enabled {q}.jar{Style.RESET_ALL}")
-                return
-        else:
-            if file.split("~")[0].lower() == q:
-                os.rename(f"{plugin_path}/{file}", f"{plugin_path}/{file}.disabled")
-                print(f"{Fore.GREEN}Disabled {q}.jar{Style.RESET_ALL}")
+        if not os.path.isdir(os.path.join(plugin_path, file)):
+            if file.endswith(".disabled"):
+                if file.split(".")[0].split("~")[0].lower() == q:
+                    os.rename(f"{plugin_path}/{file}", f"{plugin_path}/{file.split('.')[0]}.jar")
+                    print(f"{Fore.GREEN}Enabled {q}.jar{Style.RESET_ALL}")
+                    return
+            else:
+                if file.split("~")[0].lower() == q:
+                    os.rename(f"{plugin_path}/{file}", f"{plugin_path}/{file}.disabled")
+                    print(f"{Fore.GREEN}Disabled {q}.jar{Style.RESET_ALL}")
