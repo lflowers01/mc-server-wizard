@@ -1,16 +1,12 @@
 
 # MC Server Wizard
+*CS50 Final Project*
+#### Video Demo:  <https://youtu.be/qC2HDNDb-4Y>
+#### Description: Tool for automating and maintain a minecraft server.
 
 Install a Minecraft server like magic!
 
 Only available for Windows, stay tuned for Linux distribution.
-
-## Installation
-
-
-
-
-
 
 ### Installation
 
@@ -28,7 +24,7 @@ Only available for Windows, stay tuned for Linux distribution.
 
  - For older machines, try running in compatibility mode for your given version.
 
-## Building from Source
+### Building from Source
 
 Dowmload the source code.
 
