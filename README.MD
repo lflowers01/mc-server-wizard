@@ -1,8 +1,8 @@
 
-# MC Server Wizard
+# YOUR PROJECT TITLE
+###Video Demo:  <https://youtu.be/qC2HDNDb-4Y>
+#### Description:
 *CS50 Final Project*
-
-**Video Demo:**  <https://youtu.be/qC2HDNDb-4Y>
 
 Install a Minecraft server like magic!
 Only available for Windows, stay tuned for Linux distribution.
