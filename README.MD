@@ -3,7 +3,7 @@
 
 *CS50 Final Project*
 
-## Table of Contents
+### Table of Contents
 
 - [Introduction](#introduction)
 - [Installation](#installation)
