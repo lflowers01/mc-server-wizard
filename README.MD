@@ -33,7 +33,7 @@ Currently, MC Server Wizard is only available for Windows. However, we are activ
 
 ### Installation
 
-1. Download the `.exe` from the [Releases](https://github.com/your/your-project/releases) tab.
+1. Download the `.exe` from the [Releases](https://github.com/lflowers01/mc-server-wizard/releases) tab.
 2. Run the executable in an empty directory.
 3. Follow the on-screen instructions to complete the installation.
 
@@ -48,7 +48,7 @@ If you encounter any issues during installation, consider the following troubles
 
 ### Usage
 
-Once the server is installed, you can use the following commands in the console:
+Once the server is installed, you can use the `help` command to show all available commands:
 
 ```plaintext
 help - Shows this help message
@@ -69,7 +69,7 @@ Explore these commands to manage your Minecraft server efficiently.
 If you prefer to build MC Server Wizard from the source code, follow these steps:
 
 Download the source code from the repository.
-Run the ./build.ps1 file.
-Use the -clean argument to delete all files in the /dist directory before building.
-Use the -test argument to run the .exe after building.
-The script will then build the .exe in the /dist directory.
+Run the `./build.ps1 file`.
+Use the `-clean` argument to delete all files in the `/dist` directory before building.
+Use the `-test` argument to run the `.exe` after building.
+The script will then build the `.exe` in the `/dist` directory.
